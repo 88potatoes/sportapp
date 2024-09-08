@@ -6,7 +6,7 @@ import { fixtures } from "~/server/db/schema";
 import type { ApiResponse } from "./types";
 import type { Fixture } from "~/server/db/types";
 
-export const playersRouter = createTRPCRouter({
+export const fixturesRouter = createTRPCRouter({
   // TODO make everything a private route
 
   create: publicProcedure
