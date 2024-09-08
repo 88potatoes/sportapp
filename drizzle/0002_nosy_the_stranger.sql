@@ -1,0 +1,1 @@
+ALTER TABLE "sportapp_fixture" DROP COLUMN IF EXISTS "team_id";

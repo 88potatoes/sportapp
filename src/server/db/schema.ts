@@ -31,7 +31,7 @@ export const players = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    team_id: integer("team_id").notNull()
+    team_id: integer("team_id").notNull().references(() => teams.id)
   },
   (player) => ({
     team_index: index("name_idx").on(player.team_id),
@@ -57,15 +57,19 @@ export const fixtures = createTable(
   "fixture",
   {
     id: serial("id").primaryKey(),
-    first_name: varchar("first_name", { length: 128 }),
-    last_name: varchar("last_name", { length: 128 }),
+    player1_id: integer('player1_id').notNull().references(() => players.id),
+    player2_id: integer('player1_id').notNull().references(() => players.id),
+    location: varchar("location", { length: 128 }),
+    datetime: timestamp("datetime", { withTimezone: true })
+    .notNull(),
+    player1_score: integer('player1_score').notNull().default(0),
+    player2_score: integer('player2_score').notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    team_id: integer("team_id").notNull()
   }
 );
 

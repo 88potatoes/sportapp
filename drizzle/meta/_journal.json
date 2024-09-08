@@ -8,6 +8,20 @@
       "when": 1725779142448,
       "tag": "0000_lame_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1725785926495,
+      "tag": "0001_peaceful_captain_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1725786243627,
+      "tag": "0002_nosy_the_stranger",
+      "breakpoints": true
     }
   ]
 }
