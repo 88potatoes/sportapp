@@ -39,9 +39,6 @@ export const playersRouter = createTRPCRouter({
         .from(players)
         .where(eq(players.id, input.id));
 
-      if (player.length === 0) {
-        return undefined;
-      }
-      return player[0]!;
+      return player;
     }),
 });
