@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fixtures } from "~/server/db/schema";
 import type { ApiResponse } from "./types";
+import type { Fixture } from "~/server/db/types";
 
 export const playersRouter = createTRPCRouter({
   // TODO make everything a private route
@@ -20,14 +21,28 @@ export const playersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(fixtures).values({
-        player1_id: input.player1_id,
-        player2_id: input.player2_id,
-        location: input.location,
-        matchtime: input.matchtime,
-        player1_score: input.player1_score,
-        player2_score: input.player2_score
-      });
+      const fixture = await ctx.db
+        .insert(fixtures)
+        .values({
+          player1_id: input.player1_id,
+          player2_id: input.player2_id,
+          location: input.location,
+          matchtime: input.matchtime,
+          player1_score: input.player1_score,
+          player2_score: input.player2_score,
+        })
+        .returning();
+
+      if (fixture.length === 0) {
+        return {
+          success: false,
+          error: "Could not create database record.",
+        } as ApiResponse;
+      }
+      return {
+        success: true,
+        data: fixture[0]!,
+      } as ApiResponse<Fixture>;
     }),
   delete: publicProcedure
     .input(z.object({ id: z.number().int() }))
@@ -40,10 +55,13 @@ export const playersRouter = createTRPCRouter({
       if (fixture.length === 0) {
         return {
           success: false,
-          error: "Could not find record to delete."
+          error: "Could not find record to delete.",
         } as ApiResponse;
       }
-      return fixture;
+      return {
+        success: true,
+        data: fixture[0]!,
+      } as ApiResponse<Fixture>;
     }),
   get: publicProcedure
     .input(z.object({ id: z.number().int() }))
@@ -52,6 +70,16 @@ export const playersRouter = createTRPCRouter({
         .select()
         .from(fixtures)
         .where(eq(fixtures.id, input.id));
-      return fixture;
+
+      if (fixture.length === 0) {
+        return {
+          success: false,
+          error: "Could not find record.",
+        } as ApiResponse;
+      }
+      return {
+        success: true,
+        data: fixture[0]!,
+      } as ApiResponse<Fixture>;
     }),
 });
