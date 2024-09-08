@@ -8,6 +8,7 @@ import {
   serial,
   timestamp,
   varchar,
+  integer
 } from "drizzle-orm/pg-core";
 
 /**
@@ -18,19 +19,53 @@ import {
  */
 export const createTable = pgTableCreator((name) => `sportapp_${name}`);
 
-export const posts = createTable(
-  "post",
+export const players = createTable(
+  "player",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    first_name: varchar("first_name", { length: 128 }),
+    last_name: varchar("last_name", { length: 128 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
+    team_id: integer("team_id").notNull()
   },
-  (example) => ({
-    nameIndex: index("name_idx").on(example.name),
+  (player) => ({
+    team_index: index("name_idx").on(player.team_id),
   })
 );
+
+export const teams = createTable(
+  "team",
+  {
+    id: serial("id").primaryKey(),
+    team_name: varchar("first_name", { length: 128 }),
+    last_name: varchar("last_name", { length: 128 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    )
+  }
+);
+
+export const fixtures = createTable(
+  "fixture",
+  {
+    id: serial("id").primaryKey(),
+    first_name: varchar("first_name", { length: 128 }),
+    last_name: varchar("last_name", { length: 128 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    ),
+    team_id: integer("team_id").notNull()
+  }
+);
+
