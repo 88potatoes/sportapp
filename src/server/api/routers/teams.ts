@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { teams } from "~/server/db/schema";
+import type { ApiResponse } from "./types";
+import type { Team } from "~/server/db/types";
 
 export const teamsRouter = createTRPCRouter({
   // TODO make everything a private route
@@ -14,9 +16,23 @@ export const teamsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(teams).values({
-        team_name: input.team_name,
-      });
+      const team = await ctx.db
+        .insert(teams)
+        .values({
+          team_name: input.team_name,
+        })
+        .returning();
+
+      if (team.length === 0) {
+        return {
+          success: false,
+          error: "Could not create record.",
+        } as ApiResponse;
+      }
+      return {
+        success: true,
+        data: team[0]!,
+      } as ApiResponse<Team>;
     }),
   delete: publicProcedure
     .input(z.object({ id: z.number().int() }))
@@ -25,7 +41,16 @@ export const teamsRouter = createTRPCRouter({
         .delete(teams)
         .where(eq(teams.id, input.id))
         .returning();
-      return team;
+      if (team.length === 0) {
+        return {
+          success: false,
+          error: "Could not find record to delete.",
+        } as ApiResponse;
+      }
+      return {
+        success: true,
+        data: team[0]!,
+      } as ApiResponse<Team>;
     }),
   get: publicProcedure
     .input(z.object({ id: z.number().int() }))
@@ -35,6 +60,15 @@ export const teamsRouter = createTRPCRouter({
         .from(teams)
         .where(eq(teams.id, input.id));
 
-      return team;
+      if (team.length === 0) {
+        return {
+          success: false,
+          error: "Could not find record.",
+        } as ApiResponse;
+      }
+      return {
+        success: true,
+        data: team[0]!,
+      } as ApiResponse<Team>;
     }),
 });
