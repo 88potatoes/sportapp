@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { fixtures } from "~/server/db/schema";
+import type { ApiResponse } from "./types";
 
 export const playersRouter = createTRPCRouter({
   // TODO make everything a private route
@@ -35,6 +36,13 @@ export const playersRouter = createTRPCRouter({
         .delete(fixtures)
         .where(eq(fixtures.id, input.id))
         .returning();
+
+      if (fixture.length === 0) {
+        return {
+          success: false,
+          error: "Could not find record to delete."
+        } as ApiResponse;
+      }
       return fixture;
     }),
   get: publicProcedure
