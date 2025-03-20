@@ -43,7 +43,6 @@ export const teams = createTable(
   {
     id: serial("id").primaryKey(),
     team_name: varchar("first_name", { length: 128 }),
-    last_name: varchar("last_name", { length: 128 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -60,7 +59,7 @@ export const fixtures = createTable(
     player1_id: integer('player1_id').notNull().references(() => players.id),
     player2_id: integer('player1_id').notNull().references(() => players.id),
     location: varchar("location", { length: 128 }),
-    datetime: timestamp("datetime", { withTimezone: true })
+    matchtime: timestamp("datetime", { withTimezone: true })
     .notNull(),
     player1_score: integer('player1_score').notNull().default(0),
     player2_score: integer('player2_score').notNull().default(0),
